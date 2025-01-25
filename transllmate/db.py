@@ -70,6 +70,19 @@ class Db(BaseModel):
             sql = sql.where(TranslateTable.temperature==temperature)
         
         return self.session.exec(sql).one() > 0
+    
+    def get_translations(self, id: int = None, model: str = None, context: int = None, temperature: float = None) -> list[TranslateTable]:
+        if id is not None:
+            return self.session.get(TranslateTable, id)
+        sql = select(TranslateTable)
+        if model is not None:
+            sql = sql.where(TranslateTable.model==model)
+        if context is not None:
+            sql = sql.where(TranslateTable.context==context)
+        if temperature is not None:
+            sql = sql.where(TranslateTable.temperature==temperature)
+        
+        return self.session.exec(sql).all()
 
     def get_structs(self, type: str = None, id: int = None, sig: str = None):
         if id is not None:

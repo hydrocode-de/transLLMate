@@ -6,6 +6,7 @@ import subprocess
 from pydantic import BaseModel, field_validator, Field
 
 from transllmate.db import Db
+from transllmate.models import TranslateWithStruct
 
 
 class Translator(BaseModel):
@@ -72,4 +73,21 @@ class Translator(BaseModel):
             temperature=self.temperature,
             body=body
         )
+    
+    @property
+    def translations(self) -> '_TRANSLATION':
+        return _TRANSLATION(self)
 
+
+class _TRANSLATION:
+    def __init__(self, translator: Translator):
+        self.translator = translator
+    
+    def all(self) -> list[TranslateWithStruct]:
+        translations = self.translator.db.get_translations(
+            model=self.translator.model,
+            context=self.translator.context_length,
+            temperature=self.translator.temperature
+        )
+
+        return [TranslateWithStruct.model_validate(t) for t in translations]

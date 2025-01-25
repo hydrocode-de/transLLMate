@@ -65,6 +65,9 @@ class TranslateTable(TranslateBase, table=True):
     struct_id: int = Field(foreign_key="structs.id")
     struct: StructTable = Relationship(back_populates="translations")
 
+class TranslateWithStruct(TranslateBase):
+    body: str
+    struct: Struct
 
 class StructWithTranslation(StructBase):
     id: int
